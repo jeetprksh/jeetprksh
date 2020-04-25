@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="Back in the pre Spring 3.1 days, we had to configure each and every bean into one of the spring configuration files which only happens to be an XML. Come and learn how we can do away with each one of those XML configuration.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <title>No XML Spring and Hibernate Integration | Jeet Prakash</title>
+    <link rel="icon" type="image/x-icon" href="/assets/images/logo.png">
+    <link rel="canonical" href="/">
+    
+    <!-- Static Resources -->
+    <link rel="stylesheet" href="/assets/css/style.css?v=0.0.6">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    
+    <!-- Social Media Share Buttons -->
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <script src="//platform.linkedin.com/in.js" type="text/javascript"> lang: en_US</script>
+    
+    <script>
+      $(function() {
+        $(".small-screen-nav").load("/templates/header.html");
+        $(".large-screen-nav").load("/templates/sidebar.html");
+        $("footer").load("/templates/footer.html");
+      });
+    </script>
+  </head>
+  <body>
+    <header class="nav-bar small-screen-nav"> </header>
+    <aside class="nav-bar large-screen-nav"> </aside>
+    <article>
+      <header>
+        <div>No XML Spring and Hibernate Integration</div>
+        <div class="post-date"><i class="far fa-calendar-alt"></i> Aug 2018</div>
+      </header>
+
+      <section class="share">
+        <div class="twitter">
+          <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-text="No XML Spring and Hibernate Integration" data-url="https://jeetprksh.com/post/no-xml-spring-and-hibernate-integration/" data-via="jeetprksh" data-related="jeetprksh" data-show-count="false">Tweet</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+        </div>
+        <div class="googleplus">
+          <div class="g-plus" data-action="share" data-href="https://jeetprksh.com/post/no-xml-spring-and-hibernate-integration/"></div>
+        </div>
+        <div class="linkedin">
+          <script type="IN/Share" data-url="https://jeetprksh.com/post/no-xml-spring-and-hibernate-integration/"></script>
+        </div>
+      </section>
+
+      <section class="article-intro">
+        <p>
+          Back in the pre Spring 3.1 days, we had to configure each and every bean into one of the spring configuration files which only happens to be an XML. And so if we were building a web application with Spring which is also using a relational database to store all its data, we needed to create a bean tag into one of those spring configuration XML files for reading out database connection properties to create a data source bean, which we then feed as a parameter to yet another bean tag to create a database session factory bean.
+        </p>
+        <p>
+          In this post we will be building a small restful web application with Spring MVC integrated with Hibernate to fetch the user record from MySQL database server and display it as a JSON response on the browser, without writing a single XML file. Furthermore we will also be doing away with tomcat’s web.xml leveraging latest Servlet 3.1 APIs and doing all of that configuration in our Java classes. So what are we waiting for!
+        </p>
+      </section>
+      
+      <section>
+        <header>
+          <div>Configuring Spring and Hibernate Integration</div>
+        </header>
+        <p>
+          We can start by making a maven project with webapp archetype into any of our favourite IDE. And in its pom.xml file we can give all the dependencies as per <a href="https://gist.github.com/jeetprksh/486bb92eac1b6c9f4043fa8666060c5e" target="_blank">this gist</a>. Notice that as one of the properties we have to set failOnMissingWebXml to be false so that we can safely delete web.xml file.
+        </p>
+        <p>
+          Now we can start with configuring DispatcherServlet for our Spring MVC application which we can do in a single class:
+        </p>
+        <div class="gist-container">
+          <script src="https://gist.github.com/jeetprksh/49aa216d7a589467dc8aea383f2e6b22.js"></script>
+        </div>
+        <p>
+          A couple of points to note here:
+        </p>
+        <ul>
+          <li>This class is extending the AbstractAnnotationConfigDispatcherServletInitializer which automatically configure DispatcherServlet and the Spring application context.</li>
+          <li>In getServletMappings() methods we return one or more paths that DispatcherServlet will be mapped to.</li>
+          <li>In getServletConfigClasses() we would be returning the @Configuration annotated classes that are having beans from which DispatcherServlet will be loading its application context.</li>
+          <li>Classes returned from getRootConfigClasses() will be used to configure other application contexts that are created by ContextLoaderListener and are shared among them.</li>
+        </ul>
+        <p>
+          This is all we need to configure our DispatcherServlet, now let's look into HibernateConfig.java and WebMvcConfig.java. In HibernateConfig.java we need to create all the beans that are necessary for handling interaction with database via Hibernate.
+        </p>
+        <div class="gist-container">
+          <script src="https://gist.github.com/jeetprksh/e611c9e0b3d1344b0f830265f71505a5.js"></script>
+        </div>
+        <p>
+          In WebMvcConfig.java we need to create web specific beans, so as we are creating restful endpoints we would need appropriate message converters that would be required to convert Java objects to their proper JSON representations.
+        </p>
+        <div class="gist-container">
+          <script src="https://gist.github.com/jeetprksh/de8108813315037a3f2321e43a4072bd.js"></script>
+        </div>
+      </section>
+
+      <section>
+        <header>
+          <div>Implementing REST and Persistence Layers</div>
+        </header>
+        <p>
+          Now that we have configured all the important parts of our application we now need to implement a REST controller and corresponding Service and DAO that are quite straightforward.
+        </p>
+        <div class="gist-container">
+          <script src="https://gist.github.com/jeetprksh/b4f3f22909733c61cdfbb76abee94445.js"></script>
+        </div>
+        <div class="gist-container">
+          <script src="https://gist.github.com/jeetprksh/05f1e72c96b9fcd521cc4b32b1a00973.js"></script>
+        </div>        
+        <p>
+          And finally our service class is doing some mission critical stuff!
+        </p>
+        <div class="gist-container">
+            <script src="https://gist.github.com/jeetprksh/c54cc480133d1550df30328ba75eb48d.js"></script>
+        </div>
+      </section>
+
+      <section>
+        <header>
+          <div>Database schema</div>
+        </header>
+        <p>
+          Lastly for the application to work we also need to create database schema in our MySQL server:
+        </p>
+        <div class="gist-container">
+          <script src="https://gist.github.com/jeetprksh/2fa572881b86c4038384a63626ecc19e.js"></script>
+        </div>
+      </section>
+
+      <section>
+        <header>
+          <div>Source Code</div>
+        </header>
+        <p>I have not put all of the code on this post, but you can check out the working project from <a href="https://github.com/jeetprksh/spring5-with-hibernate5" target="_blank">this github</a> repository</p>
+      </section>
+    </article>
+
+    <footer> </footer>
+  </body>
+</html>

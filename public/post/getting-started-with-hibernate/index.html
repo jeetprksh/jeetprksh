@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="Lets get started with Hibernate, but without using a web framework.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <title>Getting Started With Hibernate | Jeet Prakash</title>
+    <link rel="icon" type="image/x-icon" href="/assets/images/logo.png">
+    <link rel="canonical" href="/">
+    
+    <!-- Static Resources -->
+    <link rel="stylesheet" href="/assets/css/style.css?v=0.0.6">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    
+    <!-- Social Media Share Buttons -->
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <script src="//platform.linkedin.com/in.js" type="text/javascript"> lang: en_US</script>
+    
+    <script>
+      $(function() {
+        $(".small-screen-nav").load("/templates/header.html");
+        $(".large-screen-nav").load("/templates/sidebar.html");
+        $("footer").load("/templates/footer.html");
+      });
+    </script>
+  </head>
+  <body>
+    <header class="nav-bar small-screen-nav"> </header>
+    <aside class="nav-bar large-screen-nav"> </aside>
+    <article>
+      <header>
+        <div>Getting Started With Hibernate</div>
+        <div class="post-date"><i class="far fa-calendar-alt"></i> Sept 2018</div>
+      </header>
+
+      <section class="share">
+        <div class="twitter">
+          <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-text="Getting Started With Hibernate" data-url="https://jeetprksh.com/post/getting-started-with-hibernate/" data-via="jeetprksh" data-related="jeetprksh" data-show-count="false">Tweet</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+        </div>
+        <div class="googleplus">
+          <div class="g-plus" data-action="share" data-href="https://jeetprksh.com/post/getting-started-with-hibernate/"></div>
+        </div>
+        <div class="linkedin">
+          <script type="IN/Share" data-url="https://jeetprksh.com/post/getting-started-with-hibernate/"></script>
+        </div>
+      </section>
+
+      <section class="article-intro">
+        <p>
+          Hibernate is one of the most famous Object-Relational Mapping (ORM) tool that allows a developer to easily map specialised Java objects, known as Entities, to database tables while also enabling him/her to create new rows on database tables and/or update the existing ones via those Java objects. This capability greatly reduces the development time as now we don’t have to take care of each and every intricate detail about how the data is being created, updated and deleted on the database. And it need not saying that an awesome framework like Hibernate provides a <a href="https://hibernate.org/" target="_blank">lot more</a> than just that.
+        </p>
+        <p>
+          In this post we will be setting up a simple Java project to get started with Hibernate. But we will not be using a Web MVC framework like Spring on top of Hibernate because using any other framework will be a distraction for understanding Hibernate itself. So we will be creating a standalone Hibernate application and use JUnit for unit testing each Hibernate feature we learn. As our first example we will be inserting a record on User table in a local MySQL server. So lets get started!
+        </p>
+      </section>
+      
+      <section>
+        <header>
+          <div>Create a Maven Project</div>
+        </header>
+        <p>
+          Start by creating a maven project on your favourite IDE and edit the <i>pom.xml</i> file to have the following Hibernate, JUnit and MySQL (since we are using a MySQL database) dependencies. The final <i>pom.xml</i> file would look like this:
+        </p>
+        <div class="gist-container">
+          <script src="https://gist.github.com/jeetprksh/10c886cbf4cb33719787d44f931b438a.js"></script>
+        </div>
+      </section>
+      
+      <section>
+        <header>
+          <div>Configuring Hibernate</div>
+        </header>
+        <p>
+          Any Hibernate application would want minimal configuration that tells it what database to use and where to look for it. We configure all of that information in <i>hibernate.cfg.xml</i> file: 
+        </p>
+        <div class="gist-container">
+          <script src="https://gist.github.com/jeetprksh/341490d5f80dd5f15f93aa70cca83767.js"></script>
+        </div>
+        <p>
+          Apart from having database connection details it is also having details for mapped Entities. We need to keep this file in maven’s resource directory so that we have it on classpath. Now in our Java application we will read out this configuration to create an instance of <i>SessionFactory</i> which will be used to create and manage <i>Session</i> which in turn provides a CRUD interface for mapped Entities. The overall Java configuration class would be:
+        </p>
+        <div class="gist-container">
+          <script src="https://gist.github.com/jeetprksh/2214c857be5ee198212de9c9442c649e.js"></script>
+        </div>
+      </section>
+      
+      <section>
+        <header>
+          <div>Entity Class</div>
+        </header>
+        <p>
+          The entity class is a special Java class which represents a database table in our Java application and any CRUD operation that we need to on that database table would be done through this entity class. Since we need to insert a record into user table we will be creating a User entity class that would look like this:
+        </p>
+        <div class="gist-container">
+          <script src="https://gist.github.com/jeetprksh/2839169ac35e3189238f21947e2ed2f5.js"></script>
+        </div>
+        <p>
+          Notice that our User class is using following Hibernate annotations:
+        </p>
+        <ul>
+          <li>A class level annotation <i>@Entity</i> which makes it an Entity mapped with the table having similar name. If name of entity class and that of table needs to differ then we can specify table name in optional annotation parameter as <i>@Entity(name = "user_table")</i>.</li>
+          <li>With <i>@Id</i> annotation on <i>id</i> attribute we are making it the unique identifier for User entity.</li>
+          <li><i>@GeneratedValue</i> decides how the unique identifier would be generated while inserting new records into User table.</li>
+        </ul>
+      </section>
+      
+      <section>
+        <header>
+          <div>Creating the DAO Layer</div>
+        </header>
+        <p>
+          Data Access Object would be the single point of contact for whole application for updating and querying records to and from database. In our case the unit test cases will be using these DAOs for same. Since we need to insert a user entity the corresponding <i>UserDao</i> will look like this:
+        </p>
+        <div class="gist-container">
+          <script src="https://gist.github.com/jeetprksh/dd8804441a342e7b56f356d1eabdbb54.js"></script>
+        </div>
+        <p>
+          Notice that <i>UserDao</i> will only be having data access methods specific to User entity, so if we are having another entity, say <i>Address</i>, it will require its own DAO class, <i>AddressDao</i>. But these DAOs are dependent on more generic <i>CommonDao</i> which would be communicating directly with Hibernate for saving, querying and updating entities.
+        </p>
+        <div class="gist-container">
+          <script src="https://gist.github.com/jeetprksh/e484656d4d739740f1bd5e6094beac40.js"></script>
+        </div>
+        <p>
+          Each method in this DAO would be responsible for starting a transaction on an instance of <i>Session</i> object, save the Entity on same <i>Session</i> instance and then commit the transaction.
+        </p>
+      </section>
+
+      <section>
+        <header>
+          <div>Putting It All Together</div>
+        </header>
+        <p>
+          Finally, we have configured and implemented all the necessary things and now it is time we put in the final piece to see it all in action, the unit test.
+        </p>
+        <div class="gist-container">
+          <script src="https://gist.github.com/jeetprksh/7304fb4ad03c0b0b32fc6c626d19a2bc.js"></script>
+        </div>
+        <p>
+          Notice that for unit testing the insert User our unit test case is first making the User object and giving it to the DAO layer to get it inserted into database. The DAO layer will return the unique identifier of the record just inserted which we will use as the pass/fail criteria for this unit test.
+        </p>
+      </section>
+
+      <section>
+        <header>
+          <div>Code</div>
+        </header>
+        <p>
+          Working code has been committed on <a href="https://github.com/jeetprksh/hibernate-examples" target="_blank">this</a> github repository.
+        </p>
+      </section>
+    </article>
+
+    <footer> </footer>
+  </body>
+</html>
